@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="nwCGa2DMbvTwnFfCaxSlXX">
+<head data-page-node-id="ssILCdyFvsILgvDITO9LmG">
+<meta charset="UTF-8" data-page-node-id="6ZnKzr32AWVllswcyuh6bj">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="yBkQShWnk47e2xW2CA6Wf6">
+<title>配色分析挑战 · 色彩知识闯关</title>
+<style>
+  :root{
+    --primary:#F36F21; --dark:#2C3E50; --teal:#1ABC9C; --blue:#3498DB;
+    --card:#fff; --good:#27ae60; --bad:#e74c3c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+    background:linear-gradient(135deg,#fff7f0 0%,#f0f7f5 100%);
+    min-height:100vh;color:var(--dark);padding:24px 16px;
+    -webkit-user-select:none;user-select:none;
+  }
+  .wrap{max-width:900px;margin:0 auto;}
+  header{text-align:center;margin-bottom:18px;}
+  header .badge{display:inline-block;background:var(--primary);color:#fff;padding:4px 14px;border-radius:20px;font-size:13px;letter-spacing:1px;margin-bottom:10px;}
+  header h1{font-size:26px;letter-spacing:1px;}
+  header p{color:#888;margin-top:6px;font-size:14px;}
+
+  .progress{display:flex;align-items:center;gap:8px;margin-bottom:18px;font-size:13px;color:#888;}
+  .progress .bar{flex:1;height:10px;background:#e8e6e2;border-radius:6px;overflow:hidden;}
+  .progress .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--teal));border-radius:6px;transition:width .4s;}
+
+  .hud{display:flex;justify-content:center;gap:24px;margin-bottom:16px;font-size:15px;flex-wrap:wrap;}
+  .hud .box{background:var(--card);border-radius:12px;padding:8px 18px;box-shadow:0 2px 8px rgba(0,0,0,.05);font-weight:bold;}
+  .hud .box span{color:var(--primary);font-size:20px;margin:0 4px;}
+
+  .card{background:var(--card);border-radius:16px;padding:22px;box-shadow:0 4px 16px rgba(0,0,0,.08);margin-bottom:16px;}
+  .q-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+  .q-tag{background:var(--primary);color:#fff;padding:3px 12px;border-radius:14px;font-size:13px;font-weight:bold;}
+  .q-tag.tf{background:var(--blue);}
+  .q-num{font-size:15px;font-weight:bold;color:#666;}
+  .q-text{font-size:17px;line-height:1.6;margin-bottom:14px;}
+
+  .q-img{margin-bottom:14px;text-align:center;}
+  .q-img img{max-width:100%;max-height:280px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.12);}
+  .q-img .cap{font-size:12px;color:#999;margin-top:6px;}
+
+  .swatches{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:18px;justify-content:center;}
+  .swatch{width:70px;height:70px;border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,.12);position:relative;border:3px solid transparent;}
+  .swatch .lbl{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:12px;color:#666;white-space:nowrap;}
+
+  .opts{display:flex;flex-direction:column;gap:10px;}
+  .opt{background:#faf9f7;border:2px solid #e6e3dc;border-radius:12px;padding:12px 16px;cursor:pointer;font-size:15px;transition:all .15s;}
+  .opt:hover{border-color:var(--primary);background:#fff7f0;}
+  .opt.correct{border-color:var(--good);background:#eafaf1;color:var(--good);font-weight:bold;}
+  .opt.wrong{border-color:var(--bad);background:#fdecea;color:var(--bad);}
+  .opt.lock{pointer-events:none;opacity:.7;}
+
+  .feedback{display:none;margin-top:12px;padding:12px 16px;border-radius:10px;font-size:14px;line-height:1.6;}
+  .feedback.show{display:block;}
+  .feedback.right{background:#eafaf1;color:#1e7d46;border-left:4px solid var(--good);}
+  .feedback.wrong{background:#fdecea;color:#b03a2e;border-left:4px solid var(--bad);}
+
+  .btn{display:inline-block;margin-top:8px;background:var(--primary);color:#fff;border:none;padding:11px 30px;border-radius:24px;font-size:15px;cursor:pointer;font-weight:bold;letter-spacing:1px;transition:background .15s;}
+  .btn:hover{background:#e05f12;}
+  .btn:disabled{background:#c9c4b8;cursor:not-allowed;}
+
+  .result{display:none;text-align:center;margin-top:20px;background:var(--card);border-radius:16px;padding:26px;box-shadow:0 4px 16px rgba(0,0,0,.08);}
+  .result.show{display:block;animation:pop .4s;}
+  @keyframes pop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
+  .result h2{font-size:22px;margin-bottom:6px;}
+  .result .score{font-size:44px;color:var(--primary);font-weight:bold;margin:8px 0;}
+  .result .tip{color:#666;font-size:15px;line-height:1.7;}
+  .result .tagline{margin-top:14px;background:#fff3e8;border-left:4px solid var(--primary);padding:12px 16px;text-align:left;font-size:14px;color:#7a4a1e;border-radius:6px;line-height:1.7;}
+</style>
+</head>
+<body data-page-node-id="FN4NHOAm6BpGtPNlIXNpaW">
+<div class="wrap" data-page-node-id="7nNZRBsloSBwZwAMFbWgAs">
+  <header data-page-node-id="I5eUy7mLdBrxRjMjZWB4HG">
+    <div class="badge" data-page-node-id="qQtsAvy6xcQCh5QvDr58Ij">跨境电商视觉营销 · 第四次课 · 第一环节</div>
+    <h1 data-page-node-id="XUX2PaOkotvfN7Y3Re83qa">🎨 配色分析挑战</h1>
+    <p data-page-node-id="OucFl6HRH9CYVRctXZaFUM">看真实店铺页面，找出主色 · 辅助色 · 对比色，复习色相 / 明度 / 纯度 / 冷暖</p>
+  </header>
+
+  <div class="progress" data-page-node-id="BaIrMcQNDh6eds97N5Zb2H">
+    <span data-page-node-id="10vyWApgknstopbvsH20w3">闯关进度</span>
+    <div class="bar" data-page-node-id="uR3LgG8mtYxzep1HdOixeO"><i id="barFill" data-page-node-id="pEPnFm3AlARYzC8xMJUJJ6"></i></div>
+    <span id="barNum" style="white-space:nowrap;" data-page-node-id="MKujv5pdIcEhtr4FTKmtdl">0/8</span>
+  </div>
+
+  <div class="hud" data-page-node-id="Ai2EVl3u89QnPXAIt0nifr">
+    <div class="box" data-page-node-id="btKOFQpAEWLFOs1mhbyJwQ">得分 <span id="score" data-page-node-id="YMrE0u9jvpnFfY3YzQgG3m">0</span></div>
+    <div class="box" data-page-node-id="myAyGAyzrTwDgHndJUymVK">用时 <span id="timer" data-page-node-id="ZRP9qHph3gf76ykjBeRHGK">0</span> 秒</div>
+  </div>
+
+  <div class="card" id="quizCard" data-page-node-id="6o0jCp1FeVjm6cmLnyd7SB">
+    <div class="q-header" data-page-node-id="0bpNiMR3vMMZ7RFkt9DfOV">
+      <span class="q-tag" id="qTag" data-page-node-id="dvV1hag4EX0Fs9b9pcEYjz">选择题</span>
+      <span class="q-num" id="qNum" data-page-node-id="DooOrWQDt0Hr3vFBQRh2B5"></span>
+    </div>
+    <div class="q-img" id="qImg" data-page-node-id="mZjlGIGlgOtG18p8Vxfpkj"></div>
+    <div class="q-text" id="qText" data-page-node-id="xNgEkzYzB0rNBGzAFIILwE"></div>
+    <div class="swatches" id="qSwatches" data-page-node-id="xIVsTSVRjccWHjBlKjx0y9"></div>
+    <div class="opts" id="qOpts" data-page-node-id="FaBOnZxQErsB08mSAlmEoS"></div>
+    <div class="feedback" id="qFeedback" data-page-node-id="BN5I2NNyAr4XaZh2FpfZf4"></div>
+    <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled data-page-node-id="IAOJk2q6E4ET2MsDOX7Kh7">下一题 →</button>
+  </div>
+
+  <div class="result" id="result" data-page-node-id="zlCurYVnOu0dQS5kH5nLdr">
+    <h2 id="resultTitle" data-page-node-id="a5sYBkF7iRJLhm7PxwEBGv"></h2>
+    <div class="score" id="resultScore" data-page-node-id="3quAyAAAa8N6wbmRs2eVDM"></div>
+    <div class="tip" id="resultTip" data-page-node-id="KM4xgRr8DqOwPuoEsZnXdS"></div>
+    <div class="tagline" id="resultTagline" data-page-node-id="LxT1rZkJQYwi0aApTtId3Q"></div>
+    <button class="btn" onclick="restart()" data-page-node-id="aGgD3nP4tKERUtTCr4XHcE">🔁 再玩一次</button>
+  </div>
+</div>
+
+<script>
+  // 图片相对路径：与本 HTML 同级的 game_assets 文件夹
+  const IMG = p => 'game_assets/' + p;
+
+  const QUIZ = [
+    {
+      type:'choice', tag:'选择题',
+      img:IMG('ai_cute.png'), cap:'粉色系母婴店铺页面',
+      text:'这家母婴店铺页面的主色调是？',
+      opts:['粉色系','蓝色系','黑色系','绿色系'],
+      answer:0,
+      feedback:'粉色为主色调，营造柔和、温馨、可爱的感觉，与母婴商品的定位相呼应。'
+    },
+    {
+      type:'choice', tag:'选择题',
+      img:IMG('ai_sport.png'), cap:'运动鞋大促页面',
+      text:'这个促销页面中，面积最大、一眼看过去全是它的是哪种颜色？',
+      opts:['橙色（主色）','深蓝（主色）','白色（对比色）','黄色（点缀色）'],
+      answer:0,
+      feedback:'主色是页面中面积最大、决定整体色调的颜色——本页是橙色，烘托促销的热烈氛围。'
+    },
+    {
+      type:'choice', tag:'选择题',
+      img:IMG('ai_sport.png'), cap:'同上：运动鞋大促页面',
+      text:'页面中的深蓝色价格牌和「SHOP NOW」按钮，面积小但最抢眼、突出重点，它们属于？',
+      opts:['主色','辅助色','对比色（强调色）','背景色'],
+      answer:2,
+      feedback:'对比色面积小但最抢眼，用来突出主题和重点（如价格、购买按钮），引导买家点击。'
+    },
+    {
+      type:'choice', tag:'选择题',
+      swatches:[
+        {name:'A', hex:'#E43225'},{name:'B', hex:'#2E86DE'},
+        {name:'C', hex:'#F1C40F'},{name:'D', hex:'#27AE60'}
+      ],
+      text:'以下哪个色块属于「冷色」？',
+      opts:['A','B','C','D'],
+      answer:1,
+      feedback:'B 是蓝色——典型的冷色，给人冷静、科技、理智的感觉；红/黄/绿偏暖。'
+    },
+    {
+      type:'choice', tag:'选择题',
+      swatches:[
+        {name:'A', hex:'#E43225'},{name:'B', hex:'#F5B7B1'},
+        {name:'C', hex:'#922B21'},{name:'D', hex:'#FDD5CE'}
+      ],
+      text:'A、C 颜色相同但深浅不同——决定颜色「明亮程度」的属性是？',
+      opts:['色相','纯度','明度','冷暖'],
+      answer:2,
+      feedback:'明度 = 颜色的明亮程度。同一色相可以有不同明度（如深红与浅粉）。'
+    },
+    {
+      type:'choice', tag:'选择题',
+      swatches:[
+        {name:'A', hex:'#E43225'},{name:'B', hex:'#F5B7B1'}
+      ],
+      text:'A 鲜艳、B 偏灰——决定颜色「纯净/鲜艳程度」的属性是？',
+      opts:['色相','明度','纯度（饱和度）','冷暖'],
+      answer:2,
+      feedback:'纯度（饱和度）= 颜色的纯净程度。有色成分比例越大，纯度越高，颜色越鲜艳。'
+    },
+    {
+      type:'judge', tag:'判断题',
+      opts:['正确','错误'],
+      img:IMG('ai_red.png'), cap:'红色系家品分类导航页',
+      text:'这家店用红色做导航主色，是因为红色系常用于婚庆、女装、店庆等页面，醒目吸引买家。',
+      answer:true,
+      feedback:''
+    },
+    {
+      type:'judge', tag:'判断题',
+      opts:['正确','错误'],
+      img:IMG('ai_blue.png'), cap:'蓝色系水培花瓶产品页',
+      text:'蓝色多用于科技商品、家电商品、化妆品及旅游类店铺——所以这家水培花瓶店用蓝色反而「配错了」。',
+      answer:false,
+      feedback:''
+    }
+  ];
+
+  let qIndex=0, score=0, seconds=0, timerId=null, started=false;
+
+  const el = id=>document.getElementById(id);
+
+  function startTimer(){
+    if(started) return; started=true;
+    timerId=setInterval(()=>{seconds++; el('timer').textContent=seconds;},1000);
+  }
+
+  function renderQuestion(){
+    const q=QUIZ[qIndex];
+    el('qTag').textContent=q.tag;
+    el('qTag').className='q-tag'+(q.type==='judge'?' tf':'');
+    el('qNum').textContent='第 '+(qIndex+1)+' / '+QUIZ.length+' 题';
+    el('qFeedback').className='feedback';
+    el('nextBtn').disabled=true;
+    el('qOpts').innerHTML=''; el('qSwatches').innerHTML=''; el('qImg').innerHTML='';
+
+    if(q.img){
+      el('qImg').innerHTML='<img src="'+q.img+'" alt="案例图"><div class="cap">'+q.cap+'</div>';
+    }
+    if(q.swatches){
+      const s=document.createElement('div'); s.className='swatches';
+      q.swatches.forEach(sw=>{
+        const d=document.createElement('div'); d.className='swatch'; d.style.background=sw.hex;
+        d.innerHTML='<span class="lbl">'+sw.name+'</span>';
+        s.appendChild(d);
+      });
+      el('qSwatches').appendChild(s);
+    }
+    el('qText').textContent=q.text;
+    q.opts.forEach((opt,i)=>{
+      const o=document.createElement('div'); o.className='opt';
+      o.textContent=(q.type==='judge'?(i===0?'✔ 正确':'✘ 错误'):String.fromCharCode(65+i)+'. '+opt);
+      o.addEventListener('click',()=>answer(i,o));
+      el('qOpts').appendChild(o);
+    });
+    el('barFill').style.width=(qIndex/QUIZ.length*100)+'%';
+    el('barNum').textContent=qIndex+'/'+QUIZ.length;
+  }
+
+  function answer(i,optEl){
+    startTimer();
+    const q=QUIZ[qIndex];
+    const opts=el('qOpts').children;
+    const correct=(q.type==='judge')?(q.answer?0:1):q.answer;
+    for(let k=0;k<opts.length;k++) opts[k].classList.add('lock');
+    const fb=el('qFeedback'); fb.className='feedback show';
+    if(i===correct){
+      optEl.classList.add('correct'); score+=10; el('score').textContent=score;
+      fb.classList.add('right'); fb.textContent='✅ 回答正确';
+    }else{
+      optEl.classList.add('wrong');
+      fb.classList.add('wrong'); fb.textContent='✘ 回答错误';
+    }
+    el('nextBtn').disabled=false;
+  }
+
+  function nextQuestion(){
+    qIndex++;
+    if(qIndex<QUIZ.length){ renderQuestion(); }
+    else{
+      el('barFill').style.width='100%'; el('barNum').textContent=QUIZ.length+'/'+QUIZ.length;
+      showResult();
+    }
+  }
+
+  function showResult(){
+    const r=el('result'); r.classList.add('show');
+    el('quizCard').style.display='none';
+    const total=QUIZ.length*10;
+    el('resultScore').textContent=score+' / '+total;
+    const t=el('resultTitle'), tip=el('resultTip');
+    if(score===total){ t.textContent='🏆 配色小达人！满分！'; tip.innerHTML='用时 '+seconds+' 秒。主色/辅助色/对比色、三属性、冷暖你全掌握了！'; }
+    else if(score>=total*0.7){ t.textContent='🌟 很不错！'; tip.innerHTML='得分 '+score+'。错题回顾一下，概念就更清楚了。'; }
+    else{ t.textContent='💪 完成挑战！'; tip.innerHTML='得分 '+score+'。把错题的知识点记一记，下一环节再战！'; }
+    el('resultTagline').textContent='📌 完成闯关，请举手示意老师记录得分。';
+  }
+
+  function restart(){
+    qIndex=0; score=0; seconds=0; started=false; clearInterval(timerId);
+    el('score').textContent=0; el('timer').textContent=0;
+    el('result').classList.remove('show'); el('quizCard').style.display='';
+    renderQuestion();
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>

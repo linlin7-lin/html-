@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="k7MiOItV3VKeQcrBYHNcKt">
+<head data-page-node-id="59ss6alzT1uLJofeAYbNDf">
+<meta charset="UTF-8" data-page-node-id="3DHdn3EAVEMD8GOlXmBiHl">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="FNGxJmFT9FtPPO41T9tmVD">
+<title>色彩视觉连线 · 三步闯关</title>
+<style>
+  :root{
+    --primary:#F36F21; --dark:#2C3E50; --teal:#1ABC9C; --blue:#3498DB;
+    --card:#fff; --good:#27ae60; --bad:#e74c3c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+    background:linear-gradient(135deg,#f0f7f5 0%,#fff7f0 100%);
+    min-height:100vh;color:var(--dark);padding:24px 16px;
+    -webkit-user-select:none;user-select:none;
+  }
+  .wrap{max-width:900px;margin:0 auto;}
+  header{text-align:center;margin-bottom:18px;}
+  header .badge{display:inline-block;background:var(--teal);color:#fff;padding:4px 14px;border-radius:20px;font-size:13px;letter-spacing:1px;margin-bottom:10px;}
+  header h1{font-size:26px;letter-spacing:1px;}
+  header p{color:#888;margin-top:6px;font-size:14px;}
+
+  .hud{display:flex;justify-content:center;gap:24px;margin-bottom:16px;font-size:15px;flex-wrap:wrap;}
+  .hud .box{background:var(--card);border-radius:12px;padding:8px 18px;box-shadow:0 2px 8px rgba(0,0,0,.05);font-weight:bold;}
+  .hud .box span{color:var(--primary);font-size:20px;margin:0 4px;}
+
+  .card{background:var(--card);border-radius:16px;padding:22px;box-shadow:0 4px 16px rgba(0,0,0,.08);margin-bottom:16px;}
+  .round-tag{display:inline-block;background:var(--teal);color:#fff;padding:3px 12px;border-radius:14px;font-size:13px;font-weight:bold;margin-bottom:10px;}
+  .q-img{text-align:center;margin-bottom:14px;}
+  .q-img img{max-width:100%;max-height:230px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.12);}
+  .q-img .cap{font-size:12px;color:#999;margin-top:6px;}
+
+  /* 知识链展示 */
+  .chain{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0 18px;flex-wrap:wrap;}
+  .chain .node{
+    min-width:120px;max-width:210px;padding:9px 14px;border-radius:10px;
+    background:#f2f0ea;color:#b8b2a4;font-size:13px;font-weight:bold;
+    text-align:center;border:2px dashed #d8d2c4;transition:all .3s;
+  }
+  .chain .node.lit{background:#e8f8f1;color:#147d52;border:2px solid var(--good);animation:pop .35s;}
+  .chain .arrow{color:#c9c4b8;font-size:18px;font-weight:bold;}
+  @keyframes pop{from{transform:scale(.7);opacity:.3;}to{transform:scale(1);opacity:1;}}
+
+  .step-q{font-size:16px;font-weight:bold;margin-bottom:12px;text-align:center;}
+  .opts{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+  .opt{
+    background:#faf9f7;border:2px solid #e6e3dc;border-radius:12px;
+    padding:12px 18px;cursor:pointer;font-size:14px;font-weight:bold;
+    transition:all .15s;text-align:center;min-width:100px;
+  }
+  .opt:hover{border-color:var(--primary);background:#fff7f0;transform:translateY(-2px);}
+  .opt.correct{border-color:var(--good);background:#eafaf1;color:var(--good);}
+  .opt.wrong{border-color:var(--bad);background:#fdecea;color:var(--bad);}
+  .opt.lock{pointer-events:none;}
+  /* 色块选项 */
+  .opt.color-opt{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 18px;}
+  .opt .sw{width:52px;height:52px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(0,0,0,.06),0 2px 6px rgba(0,0,0,.12);}
+
+  .feedback{min-height:28px;margin-top:14px;text-align:center;font-size:15px;font-weight:bold;}
+  .feedback .ok{color:var(--good);}
+  .feedback .no{color:var(--bad);}
+
+  .next-wrap{text-align:center;margin-top:16px;display:none;}
+  .next-wrap.show{display:block;}
+  .btn{display:inline-block;background:var(--primary);color:#fff;border:none;padding:11px 30px;border-radius:24px;font-size:15px;cursor:pointer;font-weight:bold;letter-spacing:1px;}
+  .btn:hover{background:#e05f12;}
+
+  .result{display:none;text-align:center;margin-top:20px;background:var(--card);border-radius:16px;padding:26px;box-shadow:0 4px 16px rgba(0,0,0,.08);}
+  .result.show{display:block;animation:pop .4s;}
+  @keyframes pop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
+  .result h2{font-size:22px;margin-bottom:6px;}
+  .result .score{font-size:44px;color:var(--primary);font-weight:bold;margin:8px 0;}
+  .result .tip{color:#666;font-size:15px;line-height:1.7;}
+  .result .tagline{margin-top:14px;background:#fff3e8;border-left:4px solid var(--primary);padding:12px 16px;text-align:left;font-size:14px;color:#7a4a1e;border-radius:6px;line-height:1.7;}
+  .shake{animation:shake .4s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}}
+</style>
+</head>
+<body data-page-node-id="1fbKrOJKsbhfIlVHHGWi0l">
+<div class="wrap" data-page-node-id="X1QExGtcEC6GVQG2SMmYKx">
+  <header data-page-node-id="jNDzb4sJvxSReUYyMYQjQu">
+    <div class="badge" data-page-node-id="0RZX4VLHH2jWzjExEzrz51">跨境电商视觉营销 · 第四次课 · 第二环节</div>
+    <h1 data-page-node-id="tLJ4fuklpiyLsbXIGUbzkk">🔗 色彩视觉连环闯关</h1>
+    <p data-page-node-id="u1VQeyckCddwt4XIjHOgnN">看店铺页面 → 自己判断主色 → 归类色彩属性 → 连出视觉特征，三步一链</p>
+  </header>
+
+  <div class="hud" data-page-node-id="jsM7Qct92ABMAJ6dUl6dvu">
+    <div class="box" data-page-node-id="8HkgrhJgNb00nICIhxuZxE">第 <span id="round" data-page-node-id="CPADsKBXbEKGG8KpE143ah">1</span> / 6 图</div>
+    <div class="box" data-page-node-id="T2zH61LtZHR9fKtZAsUbif">得分 <span id="score" data-page-node-id="mOmOTMKMgWeClSEqpLSCcI">0</span></div>
+    <div class="box" data-page-node-id="vkkMBimfCGraIkzraQAdka">用时 <span id="timer" data-page-node-id="55poEwi0cySM3dqOgKTZa3">0</span> 秒</div>
+  </div>
+
+  <div class="card" id="gameCard" data-page-node-id="TONmHhoMctb8epHDcWGBdc">
+    <span class="round-tag" id="roundTag" data-page-node-id="tUmsQzSrAFXTw9DdFLlh2M">图 1</span>
+    <div class="q-img" id="roundImg" data-page-node-id="hcLGaZemWmtWNgAa4ywBUI"></div>
+
+    <div class="chain" id="chain" data-page-node-id="Ny79HH8oJVgVsGJOBjGY7p"></div>
+
+    <div class="step-q" id="stepQ" data-page-node-id="Li32vbn9QhdjxJ1ixggGYf"></div>
+    <div class="opts" id="stepOpts" data-page-node-id="glbN85NT880RwhkAhLKzLt"></div>
+    <div class="feedback" id="fb" data-page-node-id="6iQgjWnQobOLiV52YMJvbo"></div>
+  </div>
+
+  <div class="next-wrap" id="nextWrap" data-page-node-id="NRJDmj4RLfCEI22sqnF72N">
+    <button class="btn" onclick="nextRound()" data-page-node-id="7mCZuxDGF45XUoal9jO253">下一张图 →</button>
+  </div>
+
+  <div class="result" id="result" data-page-node-id="UaEORDGdhCjIB1N9Ix0yb3">
+    <h2 id="resultTitle" data-page-node-id="wWYIpQ4LUtlTXWslX3dsEX"></h2>
+    <div class="score" id="resultScore" data-page-node-id="nGlWPEKBbUHerzn9IRCXiM"></div>
+    <div class="tip" id="resultTip" data-page-node-id="1qKUwOJkbdrEvuMsL1AtFM"></div>
+    <div class="tagline" id="resultTagline" data-page-node-id="spYvy6tHfciyJ41cdzekcc"></div>
+    <button class="btn" onclick="restart()" data-page-node-id="zFjUJ71H7KZvvVYcRdHznJ">🔁 再玩一次</button>
+  </div>
+</div>
+
+<script>
+  const IMG = p => 'game_assets/' + p;
+
+  // 三步链式：① 自己选主色(色块) ② 归类色彩属性 ③ 连出视觉特征/场景
+  // options 里 correct 写的是原始索引，渲染时会打乱
+  const ROUNDS = [
+    {
+      img:IMG('ai_red.png'), cap:'家品分类导航页',
+      chain:['主色：红','暖色系','兴奋 · 热情 · 积极'],
+      steps:[
+        {q:'第 1 步 · 这张页面的主色是？', type:'color',
+         options:[{t:'红色',hex:'#E43225'},{t:'绿色',hex:'#27AE60'},{t:'蓝色',hex:'#2E86DE'},{t:'紫色',hex:'#8E44AD'}], correct:0},
+        {q:'第 2 步 · 从冷暖来看，这个颜色属于？',
+         options:['暖色系','冷色系','中性色','无彩色系'], correct:0},
+        {q:'第 3 步 · 它的波长最长、穿透力最强，给买家的视觉感受是？',
+         options:['兴奋、热情、积极','沉静、理智、冷淡','自然、安宁、放松','神秘、高贵、优雅'], correct:0}
+      ]
+    },
+    {
+      img:IMG('ai_green.png'), cap:'综合店铺页',
+      chain:['主色：绿','冷色系','消除疲劳 · 安定'],
+      steps:[
+        {q:'第 1 步 · 这张页面的主色是？', type:'color',
+         options:[{t:'黄色',hex:'#F1C40F'},{t:'红色',hex:'#E43225'},{t:'绿色',hex:'#27AE60'},{t:'黑色',hex:'#1B1B1B'}], correct:2},
+        {q:'第 2 步 · 从冷暖来看，这个颜色属于？',
+         options:['暖色系','冷色系','无彩色系','黑白色系'], correct:1},
+        {q:'第 3 步 · 它最适宜人眼注视，因此有什么作用？适合什么店铺？',
+         options:['刺激食欲，适合食品店','显得华贵，适合珠宝店','消除疲劳、放松安定，适合生态/儿童/保健食品店','吸引冲动消费，适合促销页'], correct:2}
+      ]
+    },
+    {
+      img:IMG('ai_cute.png'), cap:'母婴店铺页',
+      chain:['主色：粉','明度高 · 纯度低','温馨 · 治愈'],
+      steps:[
+        {q:'第 1 步 · 这张页面的主色是？', type:'color',
+         options:[{t:'粉色',hex:'#F5A6C8'},{t:'灰色',hex:'#9AA0A6'},{t:'蓝色',hex:'#2E86DE'},{t:'紫色',hex:'#8E44AD'}], correct:0},
+        {q:'第 2 步 · 与正红相比，它的明度和纯度是？',
+         options:['明度更高、纯度更低','明度更低、纯度更高','明度纯度都更高','明度纯度都更低'], correct:0},
+        {q:'第 3 步 · 这样的色彩组合营造的氛围是？适合什么商品？',
+         options:['温馨、治愈 —— 母婴/女性商品','庄重、严肃 —— 商务办公','强烈、刺激 —— 运动户外','冰冷、科技 —— 数码家电'], correct:0}
+      ]
+    },
+    {
+      img:IMG('ai_blue.png'), cap:'水培花瓶产品页',
+      chain:['主色：蓝','冷色 · 明度高','沉静 · 洁净 · 通透'],
+      steps:[
+        {q:'第 1 步 · 这张页面的主色是？', type:'color',
+         options:[{t:'蓝色',hex:'#2E86DE'},{t:'橙色',hex:'#FB7701'},{t:'绿色',hex:'#27AE60'},{t:'红色',hex:'#E43225'}], correct:0},
+        {q:'第 2 步 · 从冷暖与视觉前后来看，这个颜色属于？',
+         options:['暖色 · 前进色','冷色 · 后退色','暖色 · 后退色','冷色 · 前进色'], correct:1},
+        {q:'第 3 步 · 它带来的视觉感受是？多用于什么店铺？',
+         options:['温暖热烈，食品店','沉静理智、洁净通透，科技/家电/旅游店','神秘高贵，艺术品店','喜庆醒目，婚庆店'], correct:1}
+      ]
+    },
+    {
+      img:IMG('ai_yellow.png'), cap:'黄色系店铺页',
+      chain:['主色：黄','明度最高','轻快 · 光辉 · 食品'],
+      steps:[
+        {q:'第 1 步 · 这张页面的主色是？', type:'color',
+         options:[{t:'紫色',hex:'#8E44AD'},{t:'黄色',hex:'#F1C40F'},{t:'蓝色',hex:'#2E86DE'},{t:'粉色',hex:'#F5A6C8'}], correct:1},
+        {q:'第 2 步 · 在所有色相中，它的明度是？',
+         options:['最低的','中等水平','最高的','与明度无关'], correct:2},
+        {q:'第 3 步 · 给买家轻快、光辉之感，又与食物颜色相似，适合什么店铺？',
+         options:['数码家电店','食品类店铺','婚庆用品店','艺术品店铺'], correct:1}
+      ]
+    },
+    {
+      img:IMG('ai_purple.png'), cap:'紫色系店铺页',
+      chain:['主色：紫','神秘 · 高贵','女性 · 艺术 · 奢华'],
+      steps:[
+        {q:'第 1 步 · 这张页面的主色是？', type:'color',
+         options:[{t:'紫色',hex:'#8E44AD'},{t:'绿色',hex:'#27AE60'},{t:'红色',hex:'#E43225'},{t:'黄色',hex:'#F1C40F'}], correct:0},
+        {q:'第 2 步 · 它最突出的色彩印象是？',
+         options:['活泼、跳跃','神秘、高贵','朴素、质朴','热烈、喜庆'], correct:1},
+        {q:'第 3 步 · 依据教材，这类色彩适合表现什么商品？',
+         options:['以女性为对象和以艺术品为主的商品','食品零食类商品','工具五金类商品','母婴用品类商品'], correct:0}
+      ]
+    }
+  ];
+
+  let roundIdx=0, stepIdx=0, score=0, seconds=0, timerId=null, started=false;
+  let firstTry=true;          // 当前步骤是否首次作答(首次10分，错过后5分)
+  let optionMap=[];           // 打乱后的 选项索引->正确与否
+
+  const el=id=>document.getElementById(id);
+
+  function startTimer(){
+    if(started) return; started=true;
+    timerId=setInterval(()=>{seconds++; el('timer').textContent=seconds;},1000);
+  }
+
+  function shuffle(arr){
+    const a=arr.slice();
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    return a;
+  }
+
+  function renderChain(r){
+    const c=el('chain'); c.innerHTML='';
+    r.chain.forEach((txt,i)=>{
+      if(i>0){ const a=document.createElement('span'); a.className='arrow'; a.textContent='→'; c.appendChild(a); }
+      const n=document.createElement('div');
+      n.className='node'; n.textContent='？';
+      n.dataset.txt=txt;
+      c.appendChild(n);
+    });
+  }
+
+  function lightChain(i){
+    el('chain').children[i*2].classList.add('lit');   // i*2: 跳过箭头
+    el('chain').children[i*2].textContent=el('chain').children[i*2].dataset.txt;
+  }
+
+  function renderStep(){
+    const r=ROUNDS[roundIdx];
+    const st=r.steps[stepIdx];
+    firstTry=true;
+    el('fb').innerHTML='';
+    el('stepQ').textContent=st.q;
+    const box=el('stepOpts'); box.innerHTML='';
+
+    // 打乱选项并记录正确项
+    optionMap = shuffle(st.options.map((t,i)=>({t,i})));
+
+    optionMap.forEach((o,displayIdx)=>{
+      const d=document.createElement('div');
+      if(st.type==='color'){
+        d.className='opt color-opt';
+        d.innerHTML='<span class="sw" style="background:'+o.t.hex+'"></span><span>'+o.t.t+'</span>';
+      }else{
+        d.className='opt'; d.textContent=o.t;
+      }
+      d.addEventListener('click',()=>answer(displayIdx,d));
+      box.appendChild(d);
+    });
+  }
+
+  function answer(displayIdx, optEl){
+    startTimer();
+    const r=ROUNDS[roundIdx];
+    const st=r.steps[stepIdx];
+    const opts=el('stepOpts').children;
+    const isCorrect = optionMap[displayIdx].i === st.correct;
+
+    if(isCorrect){
+      optEl.classList.add('correct');
+      for(let k=0;k<opts.length;k++) opts[k].classList.add('lock');
+      score += firstTry ? 10 : 5;
+      el('score').textContent=score;
+      lightChain(stepIdx);
+      el('fb').innerHTML='<span class="ok">✅ 正确 +'+(firstTry?10:5)+'分</span>';
+      stepIdx++;
+      setTimeout(()=>{
+        if(stepIdx < r.steps.length){ renderStep(); }
+        else{ el('nextWrap').classList.add('show'); el('fb').innerHTML='<span class="ok">🎉 这条知识链完成！</span>'; }
+      },700);
+    }else{
+      firstTry=false;
+      optEl.classList.add('wrong','shake');
+      setTimeout(()=>optEl.classList.remove('wrong'),450);
+      el('fb').innerHTML='<span class="no">✘ 不对，再想想</span>';
+    }
+  }
+
+  function renderRound(){
+    const r=ROUNDS[roundIdx];
+    stepIdx=0;
+    el('round').textContent=roundIdx+1;
+    el('roundTag').textContent='图 '+(roundIdx+1);
+    el('roundImg').innerHTML='<img src="'+r.img+'"><div class="cap">'+r.cap+'</div>';
+    el('nextWrap').classList.remove('show');
+    renderChain(r);
+    renderStep();
+  }
+
+  function nextRound(){
+    roundIdx++;
+    if(roundIdx<ROUNDS.length){ renderRound(); }
+    else{ showResult(); }
+  }
+
+  function showResult(){
+    el('gameCard').style.display='none';
+    el('nextWrap').classList.remove('show');
+    const r=el('result'); r.classList.add('show');
+    const total=ROUNDS.length*3*10;
+    el('resultScore').textContent=score+' / '+total;
+    const t=el('resultTitle'), tip=el('resultTip');
+    if(score===total){ t.textContent='🏆 一步未错，色彩视觉满分！'; tip.innerHTML='用时 '+seconds+' 秒。'; }
+    else if(score>=total*0.7){ t.textContent='🌟 很不错！'; tip.innerHTML='得分 '+score+'，有几次重试也没关系，记住那条知识链。'; }
+    else{ t.textContent='💪 完成闯关！'; tip.innerHTML='得分 '+score+'。'; }
+    el('resultTagline').textContent='📌 完成闯关，请举手示意老师记录得分。';
+  }
+
+  function restart(){
+    roundIdx=0; score=0; seconds=0; started=false; clearInterval(timerId);
+    el('score').textContent=0; el('timer').textContent=0;
+    el('result').classList.remove('show'); el('gameCard').style.display='';
+    renderRound();
+  }
+
+  renderRound();
+</script>
+</body>
+</html>
